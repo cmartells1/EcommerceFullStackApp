@@ -1,12 +1,12 @@
-import Layout from "@/components/Layout";
-import axios from "axios";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import Layout from '@/components/Layout';
+import axios from 'axios';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   useEffect(() => {
-    axios.get("/api/products").then((response) => {
+    axios.get('/api/products').then((response) => {
       setProducts(response.data);
     });
   }, []);
@@ -15,7 +15,7 @@ export default function Products() {
     <Layout>
       <Link
         className='bg-blue-900 text-white rounded-md py-1 px-2'
-        href={"products/new"}>
+        href={'products/new'}>
         Add new product
       </Link>
       <table className='basic mt-2'>
@@ -27,10 +27,10 @@ export default function Products() {
         </thead>
         <tbody>
           {products.map((product) => (
-            <tr>
+            <tr key={product._id}>
               <td>{product.title}</td>
               <td>
-                <Link href={"products/edit/" + product._id}>
+                <Link href={'products/edit/' + product._id}>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
@@ -46,7 +46,7 @@ export default function Products() {
                   </svg>
                   Edit
                 </Link>
-                <Link href={"products/delete/" + product._id}>
+                <Link href={'products/delete/' + product._id}>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
