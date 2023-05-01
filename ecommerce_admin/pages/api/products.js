@@ -1,5 +1,5 @@
-import { mongooseConnect } from "@/lib/mongoose";
-import { Product } from "@/models/Product";
+import { mongooseConnect } from '@/lib/mongoose';
+import { Product } from '@/models/Product';
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -9,23 +9,25 @@ export default async function handler(req, res) {
     if (req.query?.id) {
       res.json(await Product.findOne({ _id: req.query.id }));
     } else {
-
       res.json(await Product.find());
     }
   }
 
   if (method === 'POST') {
-    const { title, description, price } = req.body;
+    const { title, description, price, images } = req.body;
     const productDocument = await Product.create({
-      title, description, price
+      title,
+      description,
+      price,
+      images,
     });
 
     res.json(productDocument);
   }
 
   if (method === 'PUT') {
-    const { title, description, price, _id } = req.body;
-    await Product.updateOne({ _id }, { title, description, price });
+    const { title, description, price, images, _id } = req.body;
+    await Product.updateOne({ _id }, { title, description, price, images });
     res.json(true);
   }
 
@@ -35,5 +37,4 @@ export default async function handler(req, res) {
       res.json(true);
     }
   }
-
 }

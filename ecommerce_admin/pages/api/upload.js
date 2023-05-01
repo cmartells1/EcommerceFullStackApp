@@ -1,9 +1,9 @@
-import multiparty from "multiparty";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import fs from "fs";
-import mime from "mime-types";
+import multiparty from 'multiparty';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import fs from 'fs';
+import mime from 'mime-types';
 
-const bucketName = "chris-next-ecommerce";
+const bucketName = 'chris-next-ecommerce';
 
 export default async function handle(req, res) {
   //we will parse the file outselves
@@ -14,9 +14,9 @@ export default async function handle(req, res) {
       resolve({ fields, files });
     });
   });
-  console.log("length:", files.file.length);
+  console.log('length:', files.file.length);
   const client = new S3Client({
-    region: "us-east-2",
+    region: 'us-east-2',
     credentials: {
       accessKeyId: process.env.S3_ACCESS_KEY,
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
@@ -24,15 +24,14 @@ export default async function handle(req, res) {
   });
   const links = [];
   for (const file of files.file) {
-    const ext = file.originalFilename.split(".").pop();
-    const newFilename = Date.now() + "." + ext;
-    console.log({ ext, file });
+    const ext = file.originalFilename.split('.').pop();
+    const newFilename = Date.now() + '.' + ext;
     await client.send(
       new PutObjectCommand({
         Bucket: bucketName,
         Key: newFilename,
         Body: fs.readFileSync(file.path),
-        ACL: "public-read",
+        ACL: 'public-read',
         ContentType: mime.lookup(file.path),
       })
     );

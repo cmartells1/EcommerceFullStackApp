@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import Spinner from './Spinner';
 
 export default function ProductForm({
   _id,
@@ -14,12 +15,13 @@ export default function ProductForm({
   const [price, setPrice] = useState(existingPrice || '');
   const [goToProducts, setGoToProducts] = useState(false);
   const [images, setImages] = useState(existingImages || []);
+  const [isUploading, setIsUploading] = useState(false);
 
   const router = useRouter();
 
   const saveProduct = async (ev) => {
     ev.preventDefault();
-    const data = { title, description, price };
+    const data = { title, description, price, images };
     if (_id) {
       await axios.put('/api/products', { ...data, _id });
     } else {
@@ -35,6 +37,7 @@ export default function ProductForm({
   async function uploadImages(e) {
     const files = e.target?.files;
     if (files?.length > 0) {
+      setIsUploading(true);
       const data = new FormData();
       for (const file of files) {
         data.append('file', file);
@@ -44,6 +47,7 @@ export default function ProductForm({
       setImages((oldImages) => {
         return [...oldImages, ...res.data.links];
       });
+      setIsUploading(false);
     }
   }
   return (
@@ -56,7 +60,7 @@ export default function ProductForm({
         onChange={(e) => setTitle(e.target.value)}
       />
       <label>Photos</label>
-      <div className='mb-2 flex flex-wrap gap-2'>
+      <div className='mb-2 flex flex-wrap gap-1'>
         {!!images?.length &&
           images.map((link) => (
             <div
@@ -69,6 +73,11 @@ export default function ProductForm({
               />
             </div>
           ))}
+        {isUploading && (
+          <div className='h-24 flex items-center'>
+            <Spinner />
+          </div>
+        )}
         <label className='w-24 h-24 cursor-pointer text-center flex items-center justify-center text-sm gap-1 text-gray-500 rounded-lg bg-gray-200'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -90,7 +99,6 @@ export default function ProductForm({
             onChange={uploadImages}
           />
         </label>
-        {!images?.length && <div>No Photos in This Product</div>}
       </div>
       <label>Description</label>
       <textarea
